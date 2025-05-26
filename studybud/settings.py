@@ -57,7 +57,11 @@ ROOT_URLCONF = 'studybud.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            # since we have created 'templates' folder to render html for specific routes, here we are letting django know that we have created 'templates' folder or we can say that we are connecting 'templates' to django
+            # the below code is saying that "go back to base directory i.e. our main folder 'studybud' and in there look for 'templates' folder
+            BASE_DIR / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
