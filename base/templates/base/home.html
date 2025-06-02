@@ -1,0 +1,20 @@
+{% extends 'main.html' %}
+
+<!-- here we are specifying where to show this home template i.e. inside this 'block content' and 'endblock content' of main.html -->
+{% block content %}
+
+<h1>Home Template</h1>
+<!-- this is the template for displaying the data of 'rooms' list from views  -->
+<div>
+  <div>
+    {% for room in rooms %}
+    <div>
+      <h5>
+        {{room.id}} --<a href="{% url 'room' room.id %}">{{room.name}}</a>
+      </h5>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock content %}
