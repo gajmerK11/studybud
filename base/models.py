@@ -22,3 +22,21 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
+# another model. Each room is gonna have a message
+class Message(models.Model):
+    # below are the values of Message i.e the things message going to have
+    # user = 
+    # look at notion for this code explanation
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    # 'body' here is the actual message
+    body = models.TextField()
+    # 'updated' stores the timestamp of the last time the message was modified
+    # 'created' stores the timestamp of when the message was first created (sent)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True) 
+
+# This method defines how a message object is represented as a string
+# It returns the first 50 characters of the message body for a readable summary (Remember it's not in the front end, but rather behind the scenes)
+def __str__(self):
+    return self.body[0:50]
+

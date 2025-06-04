@@ -3,11 +3,11 @@ from .models import Room
 
 # Create your views here.
 # we have created this 'rooms' list of dictionaries to pass data
-rooms = [
-    {'id': 1, 'name': 'Lets learn python!'},
-    {'id': 2, 'name': 'Design with me'},
-    {'id': 3, 'name': 'Frontend developers'},
-]
+# rooms = [
+#     {'id': 1, 'name': 'Lets learn python!'},
+#     {'id': 2, 'name': 'Design with me'},
+#     {'id': 3, 'name': 'Frontend developers'},
+# ]
 
 
 def home(request):
@@ -25,8 +25,7 @@ def home(request):
 def room(request, pk):
     # below code is for dynamically getting values of 'rooms' in respective url with id
     room = None
-    for i in rooms:
-        if i['id'] == int(pk):
-            room = i
+    # below code is model manager. get() method returns one single item. Since get returns one single item, we need to get this by a unique value because let's say we have two items with the same value like a 'name' or sth like that it's gonna throw an error because it needs to get back single object. That's why in this case we are gonna specify the value that we wanna get it by as 'id=pk'
+    room = Room.objects.get(id=pk)
     context = {'room': room}
     return render(request, 'base/room.html', context)
