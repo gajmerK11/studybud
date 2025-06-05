@@ -9,9 +9,15 @@
   <div>
     {% for room in rooms %}
     <div>
+      <!-- here we are displaying the host of the room in frontend of room i.e. displaying creator of repsective room like '@kumar' -->
+      <span>@{{room.host.username}}</span>
       <h5>
         {{room.id}} --<a href="{% url 'room' room.id %}">{{room.name}}</a>
       </h5>
+      <!-- displaying name of the topic -->
+      <small>{{room.topic.name}}</small>
+      <!-- adding line break -->
+      <hr />
     </div>
     {% endfor %}
   </div>

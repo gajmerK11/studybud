@@ -1,9 +1,22 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+# another model 'Topic'. A room is going to be the child of a topic so we are making it above 'Room'
+class Topic(models.Model):
+    # we have only created one attribute here because 'Topic' is only going to have the name of the topic
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 
 # we are inheriting from 'models' and this is what's gonna change it from standard python class to actual django model or basically database table
 class Room(models.Model):
-    #host = 
-    #topic = 
+    # relationship between User and host i.e. somebody has to host the room
+    host = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    # setting up of relationship between Room and Topic i.e. a Topic can have multiple Rooms whereas a Room can only have one Topic. 'on_delete=models.SET_NULL' means when a Topic is deleted, don't delete the Room instead, just set the Topic of the related Room to NULL (i.e. empty/no topic) and 'null=True' means that 'topic' field in the database can be NULL. If 'null=True' is not set then django will not allow a NULL value in this field and will throw an error.
+    topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     # here 'null=True' means that this can be blank i.e. 'description' column can be empty
     # here 'blank=True' means when we run the save method like when we submit the form, that form can also be empty
@@ -25,7 +38,8 @@ class Room(models.Model):
 # another model. Each room is gonna have a message
 class Message(models.Model):
     # below are the values of Message i.e the things message going to have
-    # user = 
+    # setting up 'user' relationship that is one-to-many relationship i.e. one user can have many messages but all the messages will be linked up to one user
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # look at notion for this code explanation
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     # 'body' here is the actual message
@@ -36,7 +50,7 @@ class Message(models.Model):
     created = models.DateTimeField(auto_now_add=True) 
 
 # This method defines how a message object is represented as a string
-# It returns the first 50 characters of the message body for a readable summary (Remember it's not in the front end, but rather behind the scenes)
-def __str__(self):
-    return self.body[0:50]
+# It returns the first 50 characters of the message body for a readable summary (Remember it's not in the front end, but rather behind the scenes, in a way we can say in Django admin panel)
+    def __str__(self):
+        return self.body[0:50]
 
