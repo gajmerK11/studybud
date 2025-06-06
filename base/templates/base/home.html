@@ -6,6 +6,9 @@
 <h1>Home Template</h1>
 <!-- this is the template for displaying the data of 'rooms' list from views  -->
 <div>
+  <!-- 'create-room' is the name of the path (look in urls.py) -->
+  <a href="{% url 'create-room' %}">Create Room</a>
+
   <div>
     {% for room in rooms %}
     <div>

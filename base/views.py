@@ -20,6 +20,7 @@ def home(request):
     context = {'rooms': rooms}
     return render(request, 'base/home.html', context)
 
+
 # anoter route
 # our website is going to have rooms for different conversations so we are creating a route for it
 def room(request, pk):
@@ -29,3 +30,9 @@ def room(request, pk):
     room = Room.objects.get(id=pk)
     context = {'room': room}
     return render(request, 'base/room.html', context)
+
+
+# this function is for rendering the form 'room_form.html' that is used for creating and updating the room without having to go to django admin panel
+def createRoom(request):
+    context = {}
+    return render(request, 'base/room_form.html', context)
