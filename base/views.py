@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from .models import Room
+from .forms import RoomForm
 
 # Create your views here.
 # we have created this 'rooms' list of dictionaries to pass data
@@ -32,7 +33,16 @@ def room(request, pk):
     return render(request, 'base/room.html', context)
 
 
-# this function is for rendering the form 'room_form.html' that is used for creating and updating the room without having to go to django admin panel
+# this function is for rendering the form 'room_form.html' that is used for creating and updating the room without having to go to django admin panel i.e. creating room from frontend. 
+# In overall, we can say this function handles the web request for creating a new room.
 def createRoom(request):
-    context = {}
+    form = RoomForm()
+
+    if request.method == 'POST':
+        form = RoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        
+    context = {'form': form}
     return render(request, 'base/room_form.html', context)
