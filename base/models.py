@@ -29,8 +29,13 @@ class Room(models.Model):
     updated = models.DateTimeField(auto_now=True)
     # updated and created are similar but the difference between auto_now and auto_now_add is that auto_now takes the timestamp every time we save the item but auto_now_add only takes the timestamp when we FIRST save or create this instance
     # so if we save it multiple times 'created' value will never change because of auto_now_add but 'updated' value will change everytime because of auto_now
-    # basically this 'updated' and 'created' is for knowing when was any room created and when was the last time it was updated  
+    # basically this 'updated' and 'created' is for knowing when was any room created and when was the last time it was updated
+    # 'updated' and 'created' are timstamp fields for Room model
     created = models.DateTimeField(auto_now_add=True)  
+
+    # This is done so that newly created rooms appear in top. Here 'Meta' class is used because 'Meta' class is used specifically to define metadata(extra information) for a model-meaning "information about how the model behaves, not what data it holds." And yes even tuple can be used but list is mostly used due to convention.
+    class Meta:
+        ordering = ['-updated', '-created']
 
     def __str__(self):
         return self.name

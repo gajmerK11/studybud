@@ -3,26 +3,45 @@
 <!-- here we are specifying where to show this home template i.e. inside this 'block content' and 'endblock content' of main.html -->
 {% block content %}
 
-<h1>Home Template</h1>
-<!-- this is the template for displaying the data of 'rooms' list from views  -->
-<div>
-  <!-- 'create-room' is the name of the path (look in urls.py) -->
-  <a href="{% url 'create-room' %}">Create Room</a>
+<style>
+  .home-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+  }
+</style>
 
+<!-- main div container -->
+<div class="home-container">
+  <!-- first div container within main div container -->
   <div>
-    {% for room in rooms %}
+    <h3>Browse Topics</h3>
+    <hr />
+  </div>
+
+  <!-- second div container within main div container -->
+  <div>
+    <!-- 'create-room' is the name of the path (look in urls.py) -->
+    <a href="{% url 'create-room' %}">Create Room</a>
+
     <div>
-      <!-- here we are displaying the host of the room in frontend of room i.e. displaying creator of repsective room like '@kumar' -->
-      <span>@{{room.host.username}}</span>
-      <h5>
-        {{room.id}} --<a href="{% url 'room' room.id %}">{{room.name}}</a>
-      </h5>
-      <!-- displaying name of the topic -->
-      <small>{{room.topic.name}}</small>
-      <!-- adding line break -->
-      <hr />
+      {% for room in rooms %}
+      <div>
+        <!-- Button for editing the room -->
+        <a href="{% url 'update-room' room.id %}">Edit</a>
+        <!-- Button for deleting the room -->
+        <a href="{% url 'delete-room' room.id %}">Delete</a>
+        <!-- here we are displaying the host of the room in frontend of room i.e. displaying creator of repsective room like '@kumar' -->
+        <span>@{{room.host.username}}</span>
+        <h5>
+          {{room.id}} --<a href="{% url 'room' room.id %}">{{room.name}}</a>
+        </h5>
+        <!-- displaying name of the topic -->
+        <small>{{room.topic.name}}</small>
+        <!-- adding line break -->
+        <hr />
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
 </div>
 

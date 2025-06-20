@@ -2,19 +2,13 @@ from django.shortcuts import redirect, render
 from .models import Room
 from .forms import RoomForm
 
-# Create your views here.
-# we have created this 'rooms' list of dictionaries to pass data
-# rooms = [
-#     {'id': 1, 'name': 'Lets learn python!'},
-#     {'id': 2, 'name': 'Design with me'},
-#     {'id': 3, 'name': 'Frontend developers'},
-# ]
 
 
+# view function for 'home.html'
 def home(request):
     # this is model manager. for more info look at notion
-    # this is for displaying all the rooms that we have created in database i.e. in django backend to display at frontend
-    rooms = Room.objects.all() #it overrides the above 'rooms' variable
+    # this is for displaying all the rooms that we have created in database ,i.e. in django backend, to display at frontend
+    rooms = Room.objects.all()  
     # when this function will be triggered, it will render 'home.html' file
     # render function takes 2 parameters: first one 'request' object, second one 'template' that we want to render
     # we have created this 'context' variable just to store the data that we want to pass
@@ -33,16 +27,48 @@ def room(request, pk):
     return render(request, 'base/room.html', context)
 
 
-# this function is for rendering the form 'room_form.html' that is used for creating and updating the room without having to go to django admin panel i.e. creating room from frontend. 
-# In overall, we can say this function handles the web request for creating a new room.
+# This function is responsible for DISPLAYING a form to the user and SAVING the form data to the database when the user submits it.
 def createRoom(request):
+    # This creates a blank form from the RoomForm class. It’s shown to the user when they first open the page.
     form = RoomForm()
 
+    # This checks if the user has submitted the form (a POST request means form submission).
     if request.method == 'POST':
+        # This fills the form with the data the user submitted.
         form = RoomForm(request.POST)
+        # This checks if the submitted form data is valid (e.g., all required fields are filled out properly).
         if form.is_valid():
+            # If the form is valid, this saves the data into the database, creating a new Room object
             form.save()
+            # After saving, the user is redirected to the home page (usually a list of rooms or dashboard).
             return redirect('home')
         
     context = {'form': form}
     return render(request, 'base/room_form.html', context)
+
+# This function is for updating an existing room
+# 'pk' parameter helps us to know which room we are updating i.e. 'pk' here is the unique ID of the room we want to update
+def updateRoom(request, pk):
+    # gets the room using given id
+    room = Room.objects.get(id=pk)
+    # here we are getting the form and 'instance=room' provides us form with pre-filled data of Room that we get from above line of code
+    form = RoomForm(instance=room)
+
+    # These below lines of code are for editing / updating
+    # This checks if the user has submitted the form (here submiting the form means providing edited/updated form)
+    if request.method == 'POST':
+        # This line grabs the submitted data from the form and uses it to update the room instance.
+        form = RoomForm(request.POST, instance=room)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context = {'form': form}
+    return render(request, 'base/room_form.html', context)
+
+def deleteRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj':room})
