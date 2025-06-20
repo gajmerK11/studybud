@@ -1,18 +1,21 @@
 from django.shortcuts import redirect, render
-from .models import Room
+from .models import Room, Topic
 from .forms import RoomForm
 
 
 
 # view function for 'home.html'
 def home(request):
-    # this is model manager. for more info look at notion
-    # this is for displaying all the rooms that we have created in database ,i.e. in django backend, to display at frontend
-    rooms = Room.objects.all()  
+    # This line of code is getting the query parameter 'q' from the URL
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    # here we are filtering the rooms as per the topic names given by the user i.e. give me those rooms which have topic matching what the user typed or clicked (value of q)
+    rooms = Room.objects.filter(topic__name__icontains=q)
+    # here we are getting all the topics from Topic model so that they can be displayed in home page
+    topics = Topic.objects.all()
     # when this function will be triggered, it will render 'home.html' file
     # render function takes 2 parameters: first one 'request' object, second one 'template' that we want to render
     # we have created this 'context' variable just to store the data that we want to pass
-    context = {'rooms': rooms}
+    context = {'rooms': rooms, 'topics':topics}
     return render(request, 'base/home.html', context)
 
 
