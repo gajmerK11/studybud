@@ -33,16 +33,22 @@
 
   <!-- second div container within main div container -->
   <div>
+    <!-- To display number of available rooms for searched room -->
+    <h5>{{room_count}} rooms available</h5>
+
     <!-- 'create-room' is the name of the path (look in urls.py) -->
     <a href="{% url 'create-room' %}">Create Room</a>
 
     <div>
       {% for room in rooms %}
       <div>
+        {% if request.user == room.host %}
         <!-- Button for editing the room -->
         <a href="{% url 'update-room' room.id %}">Edit</a>
         <!-- Button for deleting the room -->
         <a href="{% url 'delete-room' room.id %}">Delete</a>
+        {% endif %}
+
         <!-- here we are displaying the host of the room in frontend of room i.e. displaying creator of repsective room like '@kumar' -->
         <span>@{{room.host.username}}</span>
         <h5>

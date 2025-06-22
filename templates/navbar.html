@@ -1,5 +1,18 @@
 <a href="/">
   <h1>LOGO</h1>
 </a>
+<!-- Search form -->
+<!-- Here 'q' acts as the label to the value typed by the user within search form (infact that's the role of 'name' attribute i.e. to act as label/key) i.e. if user types in the search form 'web' then 'q' acts as its label/key i.e. q=web and this goes to home view function because in action we have specified that -->
+<form method="GET" action="{% url 'home' %}">
+  <input type="text" name="q" placeholder="Search Rooms..." />
+</form>
 
+<!-- 'if request.user.is_authenticated' means if user is logged in then he will be displayed "Logout" clickable in navbar -->
+{% if request.user.is_authenticated %}
+<p>Hello {{request.user}}</p>
+<a href="{% url 'logout' %}">Logout</a>
+{% else %}
+<!-- if user is not logged in then he will be displayed clickable to display 'login' in navbar -->
+<a href="{% url 'login' %}">Login</a>
+{% endif %}
 <hr />

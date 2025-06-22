@@ -1,48 +1,155 @@
 from django.shortcuts import redirect, render
 from .models import Room, Topic
 from .forms import RoomForm
+from django.db.models import Q
+from django.contrib.auth.models import User
+# imported from django documentation (after searching 'django flash messages')
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
 
+# login view function
+def loginPage(request):
+    
+    page = 'login'
+
+    # restricting logged in user from going back to login page
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    # here we are getting username and password from login form (request.method == 'POST' means when user submits the form)
+    if request.method == 'POST':
+        username = request.POST.get('username').lower()
+        password = request.POST.get('password')
+
+        # making sure the user exists
+        try:
+            user = User.objects.get(username=username)
+        except:
+            # copied from documentation of django after searching 'django flash messgaes'
+            messages.error(request, 'User does not exist')
+
+        # here we are authenticating user. Meaning if user does exist then we are checking his credentials
+        user = authenticate(request, username=username, password=password)
+
+        # Then here we are logging in user. 'if user is not None' means if 'user' exists
+        if user is not None:
+            # this adds 'session' in the database and in the browser
+            login(request, user)
+            # after user is logged in we are taking him to home page
+            return redirect('home')
+        
+        # here else means 'if user does not exist'
+        else:
+            messages.error(request, 'Username or Password does not exist')
+
+    context = {'page':page}
+    return render(request, 'base/login_register.html', context)
+
+# logout view function
+def logoutUser(request):
+
+    # this deletes that 'session'
+    logout(request)
+
+    return redirect('home')
+
+# register view function
+def registerPage(request):
+
+    # Initializes a blank user registration form.
+    form = UserCreationForm()
+
+    # Checks if the user has submitted the registration form.
+    if request.method == 'POST':
+
+        # Creates a new form using the user submitted data (request.POST) and that is stored in 'form'
+        form = UserCreationForm(request.POST)
+
+        # Checks if the submitted form data is valid
+        if form.is_valid():
+
+            # Creates/Registers a new User object from the form stores it in variable 'user' but doesn't save it to the database yet due to 'commit=False'. 'commit=False' lets you modify the user object before saving so that for example if user has typed in their username in full capital then before saving it to database we can modify that username as done below 
+            user = form.save(commit=False)
+            
+            # Converts the username to lowercase before saving to database. This helps prevent duplicate users like John and john.
+            user.username = user.username.lower()
+
+            # Saves the new user to the database.
+            user.save()
+
+            # Logs the user in automatically after registration.
+            login(request, user)
+            
+            # Redirects the newly registered and logged-in user to the home page.
+            return redirect('home')
+        else:
+            messages.error(request, 'An error occured during registration')
+
+    return render(request, 'base/login_register.html', {'form':form})
 
 
 # view function for 'home.html'
 def home(request):
+
     # This line of code is getting the query parameter 'q' from the URL
     q = request.GET.get('q') if request.GET.get('q') != None else ''
-    # here we are filtering the rooms as per the topic names given by the user i.e. give me those rooms which have topic matching what the user typed or clicked (value of q)
-    rooms = Room.objects.filter(topic__name__icontains=q)
+
+    # here we are filtering the rooms as per the topic names or name of the room or description in the room. This is because it enables user to search the rooms either by topic name or room name or by description. Q here is (not a separate library) a class provided by Django that allows us to use AND, OR operations.
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q) |
+        Q(description__icontains=q) 
+        )
+    
     # here we are getting all the topics from Topic model so that they can be displayed in home page
     topics = Topic.objects.all()
+
+    room_count = rooms.count()
+
     # when this function will be triggered, it will render 'home.html' file
     # render function takes 2 parameters: first one 'request' object, second one 'template' that we want to render
     # we have created this 'context' variable just to store the data that we want to pass
-    context = {'rooms': rooms, 'topics':topics}
+    context = {'rooms': rooms, 'topics':topics, 'room_count':room_count}
+
     return render(request, 'base/home.html', context)
 
 
-# anoter route
-# our website is going to have rooms for different conversations so we are creating a route for it
+
+# our website is going to have rooms for different conversations 
 def room(request, pk):
+
     # below code is for dynamically getting values of 'rooms' in respective url with id
     room = None
+
     # below code is model manager. get() method returns one single item. Since get returns one single item, we need to get this by a unique value because let's say we have two items with the same value like a 'name' or sth like that it's gonna throw an error because it needs to get back single object. That's why in this case we are gonna specify the value that we wanna get it by as 'id=pk'
     room = Room.objects.get(id=pk)
+
     context = {'room': room}
     return render(request, 'base/room.html', context)
 
 
 # This function is responsible for DISPLAYING a form to the user and SAVING the form data to the database when the user submits it.
+@login_required(login_url='login')
 def createRoom(request):
+
     # This creates a blank form from the RoomForm class. It’s shown to the user when they first open the page.
     form = RoomForm()
 
     # This checks if the user has submitted the form (a POST request means form submission).
     if request.method == 'POST':
+        
         # This fills the form with the data the user submitted.
         form = RoomForm(request.POST)
+
         # This checks if the submitted form data is valid (e.g., all required fields are filled out properly).
         if form.is_valid():
+
             # If the form is valid, this saves the data into the database, creating a new Room object
             form.save()
+
             # After saving, the user is redirected to the home page (usually a list of rooms or dashboard).
             return redirect('home')
         
@@ -51,17 +158,26 @@ def createRoom(request):
 
 # This function is for updating an existing room
 # 'pk' parameter helps us to know which room we are updating i.e. 'pk' here is the unique ID of the room we want to update
+@login_required(login_url='login')
 def updateRoom(request, pk):
+
     # gets the room using given id
     room = Room.objects.get(id=pk)
+
     # here we are getting the form and 'instance=room' provides us form with pre-filled data of Room that we get from above line of code
     form = RoomForm(instance=room)
+
+    # here we are restricting a user to edit other user's created rooms (i.e. room not created by him; he is not the host)
+    if request.user != room.host:
+        return HttpResponse('You are not allowed here!!')
 
     # These below lines of code are for editing / updating
     # This checks if the user has submitted the form (here submiting the form means providing edited/updated form)
     if request.method == 'POST':
+
         # This line grabs the submitted data from the form and uses it to update the room instance.
         form = RoomForm(request.POST, instance=room)
+
         if form.is_valid():
             form.save()
             return redirect('home')
@@ -69,8 +185,14 @@ def updateRoom(request, pk):
     context = {'form': form}
     return render(request, 'base/room_form.html', context)
 
+@login_required(login_url='login')
 def deleteRoom(request, pk):
     room = Room.objects.get(id=pk)
+    
+    # here we are restricting a user to delete other user's created rooms (i.e. room not created by him; he is not the host)
+    if request.user != room.host:
+        return HttpResponse('You are not allowed here!!')
+    
     if request.method == 'POST':
         room.delete()
         return redirect('home')

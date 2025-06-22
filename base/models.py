@@ -33,7 +33,7 @@ class Room(models.Model):
     # 'updated' and 'created' are timstamp fields for Room model
     created = models.DateTimeField(auto_now_add=True)  
 
-    # This is done so that newly created rooms appear in top. Here 'Meta' class is used because 'Meta' class is used specifically to define metadata(extra information) for a model-meaning "information about how the model behaves, not what data it holds." And yes even tuple can be used but list is mostly used due to convention.
+    # This is done so that newly created rooms appear in top. Here 'Meta' class is used because 'Meta' class is used specifically to define metadata(extra information) for a model.Meaning "information about how the model behaves, not what data it holds." And yes even tuple can be used but list is mostly used due to convention.
     class Meta:
         ordering = ['-updated', '-created']
 

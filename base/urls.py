@@ -2,6 +2,15 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # path for login
+    path('login/', views.loginPage, name="login"),
+
+    # path for logout
+    path('logout/', views.logoutUser, name="logout"),
+    
+    # path for register
+    path('register/', views.registerPage, name="register"),
+
     path('', views.home, name="home"),
     
     # to make the each value of list 'rooms' clickable and to pass the id to the url we have added '<str:pk>' i.e. we are passing a dynamic value here  
