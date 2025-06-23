@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from .models import Room, Topic
+from .models import Room, Topic, Message
 from .forms import RoomForm
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -58,7 +58,8 @@ def logoutUser(request):
 
 # register view function
 def registerPage(request):
-
+    
+    # --- Processing registration form data ---
     # Initializes a blank user registration form.
     form = UserCreationForm()
 
@@ -87,6 +88,7 @@ def registerPage(request):
             return redirect('home')
         else:
             messages.error(request, 'An error occured during registration')
+    # ------------------------------------------------------- #
 
     return render(request, 'base/login_register.html', {'form':form})
 
@@ -127,7 +129,33 @@ def room(request, pk):
     # below code is model manager. get() method returns one single item. Since get returns one single item, we need to get this by a unique value because let's say we have two items with the same value like a 'name' or sth like that it's gonna throw an error because it needs to get back single object. That's why in this case we are gonna specify the value that we wanna get it by as 'id=pk'
     room = Room.objects.get(id=pk)
 
-    context = {'room': room}
+    # This line of code is saying give us all set of messages related to this specific room. 
+    # In django, we can query the child of a parent model (here Message is the child of parent model Room) like this i.e. by using small letter of model name not Message but message
+    # '.order_by('-created')' displays recent messages at top
+    room_messages = room.message_set.all().order_by('-created')
+
+    # Logic to create message i.e. comment
+    # When user submits the message via "Write your message here" form 
+    if request.method == 'POST':
+
+        # Creates the message. Here we are using 'Message' model because that's the model we have created for messages.
+        # The below code is saying create a message with the current user, current room and the types message body.
+        message = Message.objects.create(
+
+            # It links the message to the currently logged-in user who is sending the message.
+            user = request.user,
+
+            # It associates the message with the current room i.e. it keeps the message in the current room
+            room = room,
+
+            # It fetches the actual message content that the user typed in the message form in 'room.html'
+            body = request.POST.get('body')
+        )
+
+        # After the message is created, this line redirects the user back to the same room page that's why "pk=room.id" is used to know the exact location of current room. 
+        return redirect('room', pk=room.id)
+
+    context = {'room': room,'room_messages':room_messages}
     return render(request, 'base/room.html', context)
 
 
