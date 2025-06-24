@@ -23,7 +23,10 @@ class Room(models.Model):
     # 'null=True' is for database and 'blank=True' is for save method like when we are adding the form
     # these two are for the scenario "maybe someone created a room and they didn't add the description they wanna add it later, we wanna let them do that and we will just allow them to update that later"
     description = models.TextField(null=True, blank=True)
-    #participants =
+
+    # Here we are specifying many-to-many relationship between Room and User. It enables -> One Room can have many Users as participants. -> One User can be in many Rooms. 
+    participants = models.ManyToManyField(User, related_name='participants', blank=True)
+
     # this 'updated' gonna take the snapshot of any time this model instance was updated so anytime we run the save method to update this model i.e. this specific table, its gonna take the timestamp
     # here 'auto_now=True' means every time the save method is called go ahead and take the timestamp
     updated = models.DateTimeField(auto_now=True)

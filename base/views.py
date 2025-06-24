@@ -134,6 +134,10 @@ def room(request, pk):
     # '.order_by('-created')' displays recent messages at top
     room_messages = room.message_set.all().order_by('-created')
 
+    # Fetching all the participants for displaying them
+    # "room.participants.all()" in this we are able to use 'room.participants' due to related_name=participants. If we have not used 'related_name=participants' then we have to use 'user.room_set.all()'
+    participants = room.participants.all()
+
     # Logic to create message i.e. comment
     # When user submits the message via "Write your message here" form 
     if request.method == 'POST':
@@ -155,7 +159,7 @@ def room(request, pk):
         # After the message is created, this line redirects the user back to the same room page that's why "pk=room.id" is used to know the exact location of current room. 
         return redirect('room', pk=room.id)
 
-    context = {'room': room,'room_messages':room_messages}
+    context = {'room': room,'room_messages':room_messages,'participants':participants}
     return render(request, 'base/room.html', context)
 
 
