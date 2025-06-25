@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import Room, Topic, Message
 from .forms import RoomForm
 from django.db.models import Q
@@ -156,6 +156,9 @@ def room(request, pk):
             body = request.POST.get('body')
         )
 
+        # It adds new user as Participants if he writes a message / comment 
+        room.participants.add(request.user)
+
         # After the message is created, this line redirects the user back to the same room page that's why "pk=room.id" is used to know the exact location of current room. 
         return redirect('room', pk=room.id)
 
@@ -229,3 +232,19 @@ def deleteRoom(request, pk):
         room.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj':room})
+
+# view function for deleting comment
+@login_required(login_url='login')
+def deleteMessage(request, pk):
+    message = get_object_or_404(Message, id=pk)
+    room = message.room
+    
+    
+    # if request.user != message.user:
+    #     return HttpResponse('You are not allowed here!!')
+    
+    # This processes the data from delete.html
+    if request.method == 'POST':
+        message.delete()
+        return redirect('room', pk=room.id)
+    return render(request, 'base/delete.html', {'obj':message})

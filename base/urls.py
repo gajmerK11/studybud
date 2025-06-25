@@ -24,4 +24,7 @@ urlpatterns = [
 
     # url for deleting room
     path('delete-room/<str:pk>/', views.deleteRoom, name="delete-room"),
+
+    # url for deleting message/comment
+    path('delete-message/<str:pk>/', views.deleteMessage, name="delete-message"),
 ]
