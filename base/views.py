@@ -111,10 +111,13 @@ def home(request):
 
     room_count = rooms.count()
 
+    # Inorder to display all the comments happening in a room as Recent Activity here we are fetching all the messages
+    room_messages = Message.objects.all()
+
     # when this function will be triggered, it will render 'home.html' file
     # render function takes 2 parameters: first one 'request' object, second one 'template' that we want to render
     # we have created this 'context' variable just to store the data that we want to pass
-    context = {'rooms': rooms, 'topics':topics, 'room_count':room_count}
+    context = {'rooms': rooms, 'topics':topics, 'room_count':room_count, 'room_messages': room_messages}
 
     return render(request, 'base/home.html', context)
 
@@ -132,7 +135,7 @@ def room(request, pk):
     # This line of code is saying give us all set of messages related to this specific room. 
     # In django, we can query the child of a parent model (here Message is the child of parent model Room) like this i.e. by using small letter of model name not Message but message
     # '.order_by('-created')' displays recent messages at top
-    room_messages = room.message_set.all().order_by('-created')
+    room_messages = room.message_set.all()
 
     # Fetching all the participants for displaying them
     # "room.participants.all()" in this we are able to use 'room.participants' due to related_name=participants. If we have not used 'related_name=participants' then we have to use 'user.room_set.all()'
@@ -237,7 +240,7 @@ def deleteRoom(request, pk):
 @login_required(login_url='login')
 def deleteMessage(request, pk):
     message = get_object_or_404(Message, id=pk)
-    room = message.room
+    # room = message.room
     
     
     # if request.user != message.user:
@@ -246,5 +249,6 @@ def deleteMessage(request, pk):
     # This processes the data from delete.html
     if request.method == 'POST':
         message.delete()
-        return redirect('room', pk=room.id)
+        # return redirect('room', pk=room.id)
+        return redirect('home')
     return render(request, 'base/delete.html', {'obj':message})

@@ -61,4 +61,8 @@ class Message(models.Model):
 # It returns the first 50 characters of the message body for a readable summary (Remember it's not in the front end, but rather behind the scenes, in a way we can say in Django admin panel)
     def __str__(self):
         return self.body[0:50]
+   
+    # It orders recent message at top in Recent Activity
+    class Meta:
+        ordering = ['-updated', '-created']
 
