@@ -111,8 +111,8 @@ def home(request):
 
     room_count = rooms.count()
 
-    # Inorder to display all the comments happening in a room as Recent Activity here we are fetching all the messages
-    room_messages = Message.objects.all()
+    # This fetches all the messages/comments that satisfies the filtering condition
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
 
     # when this function will be triggered, it will render 'home.html' file
     # render function takes 2 parameters: first one 'request' object, second one 'template' that we want to render
