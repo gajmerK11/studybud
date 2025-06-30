@@ -1,0 +1,17 @@
+<h3>Recent Activity</h3>
+<hr />
+{% for message in room_messages %}
+<div>
+  <small>
+    <!-- Made username in Recent Acivity as clickable which takes to that user profile page -->
+    <a href="{% url 'user-profile' message.user.id %}">@{{message.user}}</a>
+    {{message.created|timesince}} ago</small
+  >
+  <small>replied to {{message.room}}</small>
+  <p>{{message}}</p>
+  <!-- This only allows the one who made comment to view the Delete button -->
+  {% if request.user == message.user %}
+  <a href="{% url 'delete-message' message.id %}">Delete</a>
+  {% endif %}
+</div>
+{% endfor %}

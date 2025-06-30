@@ -13,23 +13,7 @@
 <!-- main div container -->
 <div class="home-container">
   <!-- first div container within main div container -->
-  <div>
-    <h3>Browse Topics</h3>
-    <hr />
-
-    <!-- clickable to go back to the homepage from a particular Topic -->
-    <div>
-      <a href="{% url 'home' %}">All</a>
-    </div>
-
-    <!-- since we want to display all the topics under 'Browse Topics' -->
-    {% for topic in topics %}
-    <div>
-      <!-- here we have made all the topics as clickable so that when it is clicked the user will be thrown back to home page as we have given '{% url 'home' %}' and q here is query parameter which is required to filter the rooms based on the topic clicked by users.For more info, look at notion.   -->
-      <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}</a>
-    </div>
-    {% endfor %}
-  </div>
+  <div>{% include 'base/topics_component.html' %}</div>
 
   <!-- second div container within main div container -->
   <div>
@@ -39,46 +23,11 @@
     <!-- 'create-room' is the name of the path (look in urls.py) -->
     <a href="{% url 'create-room' %}">Create Room</a>
 
-    <div>
-      {% for room in rooms %}
-      <div>
-        {% if request.user == room.host %}
-        <!-- Button for editing the room -->
-        <a href="{% url 'update-room' room.id %}">Edit</a>
-        <!-- Button for deleting the room -->
-        <a href="{% url 'delete-room' room.id %}">Delete</a>
-        {% endif %}
-
-        <!-- here we are displaying the host of the room in frontend of room i.e. displaying creator of repsective room like '@kumar' -->
-        <span>@{{room.host.username}}</span>
-        <h5>
-          {{room.id}} --<a href="{% url 'room' room.id %}">{{room.name}}</a>
-        </h5>
-        <!-- displaying name of the topic -->
-        <small>{{room.topic.name}}</small>
-        <!-- adding line break -->
-        <hr />
-      </div>
-      {% endfor %}
-    </div>
+    {% include 'base/feed_component.html' %}
   </div>
 
   <!-- container for "Recent Activity" ------------------------>
-  <div>
-    <h3>Recent Activity</h3>
-    <hr />
-    {% for message in room_messages %}
-    <div>
-      <small>@{{message.user}} {{message.created|timesince}} ago</small>
-      <small>replied to {{message.room}}</small>
-      <p>{{message}}</p>
-      <!-- This only allows the one who made comment to view the Delete button -->
-      {% if request.user == message.user %}
-      <a href="{% url 'delete-message' message.id %}">Delete</a>
-      {% endif %}
-    </div>
-    {% endfor %}
-  </div>
+  <div>{% include 'base/activity_component.html' %}</div>
   <!--------------------------------------------------------->
 </div>
 

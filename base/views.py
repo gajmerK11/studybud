@@ -123,7 +123,7 @@ def home(request):
 
 
 
-# our website is going to have rooms for different conversations 
+# room view function 
 def room(request, pk):
 
     # below code is for dynamically getting values of 'rooms' in respective url with id
@@ -167,6 +167,27 @@ def room(request, pk):
 
     context = {'room': room,'room_messages':room_messages,'participants':participants}
     return render(request, 'base/room.html', context)
+
+# userprofile view function
+# This handles the display of a user’s profile page. pk (primary key) is passed in the URL to identify which user’s profile to show.
+def userProfile(request, pk):
+
+    # This line fetches the user object from Django's built-in User model using the given id.
+    user = User.objects.get(id=pk)
+    
+    # This gets all the rooms created by that user. It uses Django’s reverse relationship through ForeignKey(host, ...) in the Room model.
+    rooms = user.room_set.all()
+
+    # This gets all the messages/comments that the user has posted.
+    room_messages = user.message_set.all()
+
+    # This gets all available topics so that you can show them on the user profile page
+    topics = Topic.objects.all()
+
+    context = {'user':user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics }
+    
+    return render(request, 'base/profile.html', context)
+
 
 
 # This function is responsible for DISPLAYING a form to the user and SAVING the form data to the database when the user submits it.

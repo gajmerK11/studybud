@@ -1,0 +1,15 @@
+<h3>Browse Topics</h3>
+<hr />
+
+<!-- clickable to go back to the homepage from a particular Topic -->
+<div>
+  <a href="{% url 'home' %}">All</a>
+</div>
+
+<!-- since we want to display all the topics under 'Browse Topics' -->
+{% for topic in topics %}
+<div>
+  <!-- here we have made all the topics as clickable so that when it is clicked the user will be thrown back to home page as we have given '{% url 'home' %}' and q here is query parameter which is required to filter the rooms based on the topic clicked by users.For more info, look at notion.   -->
+  <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}</a>
+</div>
+{% endfor %}

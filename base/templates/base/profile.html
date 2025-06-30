@@ -1,0 +1,26 @@
+{% extends 'main.html' %} {% block content %}
+<h1>{{user.username}}</h1>
+
+<style>
+  .profile-container {
+    display: grid;
+    /* it creates three columns */
+    grid-template-columns: 1fr 3fr 1fr;
+  }
+</style>
+
+<!-- main container -->
+<div class="profile-container">
+  <!-- Three divs for three different columns -->
+
+  <!-- container for 'Browse Topics' -->
+  <div>{% include 'base/topics_component.html' %}</div>
+
+  <!-- container for 'activity feed' -->
+  <div>{% include 'base/feed_component.html' %}</div>
+
+  <!-- container for 'Recent Activity' -->
+  <div>{% include 'base/activity_component.html' %}</div>
+</div>
+
+{% endblock content %}

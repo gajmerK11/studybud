@@ -1,0 +1,20 @@
+<div>
+  {% for room in rooms %}
+  <div>
+    {% if request.user == room.host %}
+    <!-- Button for editing the room -->
+    <a href="{% url 'update-room' room.id %}">Edit</a>
+    <!-- Button for deleting the room -->
+    <a href="{% url 'delete-room' room.id %}">Delete</a>
+    {% endif %}
+
+    <!-- here we are displaying the host of the room in frontend of room i.e. displaying creator of repsective room like '@kumar' -->
+    <a href="{% url 'user-profile' room.host.id %}">@{{room.host.username}}</a>
+    <h5>{{room.id}} --<a href="{% url 'room' room.id %}">{{room.name}}</a></h5>
+    <!-- displaying name of the topic -->
+    <small>{{room.topic.name}}</small>
+    <!-- adding line break -->
+    <hr />
+  </div>
+  {% endfor %}
+</div>
