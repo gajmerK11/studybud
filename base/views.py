@@ -206,8 +206,15 @@ def createRoom(request):
         # This checks if the submitted form data is valid (e.g., all required fields are filled out properly).
         if form.is_valid():
 
-            # If the form is valid, this saves the data into the database, creating a new Room object
-            form.save()
+            # Here what we are doing is, we want the user one who is logged in to be the host of the every room he creates. 
+            # So the below line of code says "Create a room instance from the form without saving it to the database yet due to 'commit=False'."
+            room = form.save(commit=False)
+
+            # Here we are making one who is logged in i.e. 'request.user' as the host of the room 'room.host'.
+            room.host = request.user
+
+            # Saves the room instance to database
+            room.save()
 
             # After saving, the user is redirected to the home page (usually a list of rooms or dashboard).
             return redirect('home')

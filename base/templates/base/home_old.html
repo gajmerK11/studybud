@@ -1,0 +1,34 @@
+{% extends 'main.html' %}
+
+<!-- here we are specifying where to show this home template i.e. inside this 'block content' and 'endblock content' of main.html -->
+{% block content %}
+
+<style>
+  .home-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+  }
+</style>
+
+<!-- main div container -->
+<div class="home-container">
+  <!-- first div container within main div container -->
+  <div>{% include 'base/topics_component.html' %}</div>
+
+  <!-- second div container within main div container -->
+  <div>
+    <!-- To display number of available rooms for searched room -->
+    <h5>{{room_count}} rooms available</h5>
+
+    <!-- 'create-room' is the name of the path (look in urls.py) -->
+    <a href="{% url 'create-room' %}">Create Room</a>
+
+    {% include 'base/feed_component.html' %}
+  </div>
+
+  <!-- container for "Recent Activity" ------------------------>
+  <div>{% include 'base/activity_component.html' %}</div>
+  <!--------------------------------------------------------->
+</div>
+
+{% endblock content %}
