@@ -197,29 +197,24 @@ def createRoom(request):
     # This creates a blank form from the RoomForm class. It’s shown to the user when they first open the page.
     form = RoomForm()
 
+    topics = Topic.objects.all()
+
     # This checks if the user has submitted the form (a POST request means form submission).
     if request.method == 'POST':
+
+        topic_name = request.POST.get('topic')
+
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
+        )
+        return redirect('home')
         
-        # This fills the form with the data the user submitted.
-        form = RoomForm(request.POST)
-
-        # This checks if the submitted form data is valid (e.g., all required fields are filled out properly).
-        if form.is_valid():
-
-            # Here what we are doing is, we want the user one who is logged in to be the host of the every room he creates. 
-            # So the below line of code says "Create a room instance from the form without saving it to the database yet due to 'commit=False'."
-            room = form.save(commit=False)
-
-            # Here we are making one who is logged in i.e. 'request.user' as the host of the room 'room.host'.
-            room.host = request.user
-
-            # Saves the room instance to database
-            room.save()
-
-            # After saving, the user is redirected to the home page (usually a list of rooms or dashboard).
-            return redirect('home')
-        
-    context = {'form': form}
+    context = {'form': form, 'topics': topics}
     return render(request, 'base/room_form.html', context)
 
 # This function is for updating an existing room
@@ -233,22 +228,24 @@ def updateRoom(request, pk):
     # here we are getting the form and 'instance=room' provides us form with pre-filled data of Room that we get from above line of code
     form = RoomForm(instance=room)
 
+    topics = Topic.objects.all()
+
     # here we are restricting a user to edit other user's created rooms (i.e. room not created by him; he is not the host)
     if request.user != room.host:
         return HttpResponse('You are not allowed here!!')
 
-    # These below lines of code are for editing / updating
-    # This checks if the user has submitted the form (here submiting the form means providing edited/updated form)
     if request.method == 'POST':
+        topic_name = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
 
-        # This line grabs the submitted data from the form and uses it to update the room instance.
-        form = RoomForm(request.POST, instance=room)
+        room.name = request.POST.get('name')
+        room.topic= topic
+        room.description = request.POST.get('description')
+        room.save()
 
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+        return redirect('home')
 
-    context = {'form': form}
+    context = {'form': form, 'topics': topics, 'room': room }
     return render(request, 'base/room_form.html', context)
 
 @login_required(login_url='login')
@@ -280,3 +277,8 @@ def deleteMessage(request, pk):
         # return redirect('room', pk=room.id)
         return redirect('home')
     return render(request, 'base/delete.html', {'obj':message})
+
+# view function to update the user profile
+@login_required(login_url='login')
+def updateUser(request):
+    return render(request, 'base/update_user.html')

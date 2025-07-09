@@ -30,4 +30,7 @@ urlpatterns = [
 
     # url for deleting message/comment
     path('delete-message/<str:pk>/', views.deleteMessage, name="delete-message"),
+
+    # url for updating user profile
+    path('update-user/', views.updateUser, name="update-user"),
 ]

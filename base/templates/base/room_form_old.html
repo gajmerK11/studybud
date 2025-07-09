@@ -1,0 +1,16 @@
+<!-- inheriting from 'main.html' file from project 'studybud' templates folder -->
+{% extends 'main.html' %}
+
+<!-- placeholder / wrapping content within these -->
+{% block content %}
+<div>
+  <form action="" method="POST">
+    {% csrf_token %}
+    <!-- it renders the modelform 'RoomForm' that we created in 'forms.py'. 'as_p' wraps paragraph tag around every input field that the form has and renders i.e. it added a little bit space around input fields (check by removing it)-->
+    {{form.as_p}}
+    <!-- type="submit" sends the data to the server and value="Submit" makes the text Submit appear -->
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+
+{% endblock content %}
