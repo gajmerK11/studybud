@@ -1,5 +1,6 @@
 from django.forms import ModelForm
 from .models import Room
+from django.contrib.auth.models import User
 
 class RoomForm(ModelForm):
 
@@ -14,4 +15,10 @@ class RoomForm(ModelForm):
 
         # Here, 'exclude' is not a normal variable, it is actually django's ModelForm "a special configuration option".
         # It says django "Don't include these fields in the form"
-        exclude = ['host', 'participants']
+        exclude = ['host', 'participants']  
+
+# Form for editing user profile.
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
