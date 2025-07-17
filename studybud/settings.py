@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     # it connects our app "base" with django i.e. it is letting django know that we have an app called "base"
     'base.apps.BaseConfig',
+
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
