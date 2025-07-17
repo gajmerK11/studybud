@@ -107,7 +107,7 @@ def home(request):
         )
     
     # here we are getting all the topics from Topic model so that they can be displayed in home page
-    topics = Topic.objects.all()
+    topics = Topic.objects.all()[0:5]
 
     room_count = rooms.count()
 
@@ -294,3 +294,14 @@ def updateUser(request):
             return redirect('user-profile', pk=user.id)
 
     return render(request, 'base/update_user.html', {'form': form})
+
+# view function for 'browse topics' when clicked on more (for mobile view)
+def topicsPage(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    topics = Topic.objects.filter(name__icontains=q)
+    return render(request, 'base/topics.html', {'topics': topics})
+
+# view function for displaying 'recent activities' in mobile view
+def activityPage(request):
+    room_messages = Message.objects.all()
+    return render(request, 'base/activity.html', {'room_messages': room_messages})
