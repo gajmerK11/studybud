@@ -87,7 +87,54 @@ def registerPage(request):
             # Redirects the newly registered and logged-in user to the home page.
             return redirect('home')
         else:
-            messages.error(request, 'An error occured during registration')
+            # Check for specific errors and show appropriate messages
+            error_shown = False
+
+            # Check for username errors
+            if 'username' in form.errors:
+                # Check if username already exists
+                username = form.cleaned_data.get('username', '').lower() if hasattr(form, 'cleaned_data') and form.cleaned_data.get('username') else request.POST.get('username', '').lower()
+                try:
+                    User.objects.get(username=username)
+                    messages.error(request, 'User already exists')
+                    error_shown = True
+                except User.DoesNotExist:
+                    # Username has other validation errors
+                    for error in form.errors['username']:
+                        messages.error(request, f'Username: {error}')
+                        error_shown = True
+            
+            # Check for password length errors
+            if 'password2' in form.errors:
+                for error in form.errors['password2']:
+                    if '8' in error or 'minimum' in error.lower() or 'too short' in error.lower():
+                        messages.error(request, 'Password must be at least 8 characters long')
+                        error_shown = True
+                    else:
+                        messages.error(request, f'Password: {error}')
+                        error_shown = True
+            elif 'password1' in form.errors:
+                for error in form.errors['password1']:
+                    if '8' in error or 'minimum' in error.lower() or 'too short' in error.lower():
+                        messages.error(request, 'Password must be at least 8 characters long')
+                        error_shown = True
+                    else:
+                        messages.error(request, f'Password: {error}')
+                        error_shown = True
+            
+            # Check for password mismatch
+            if 'password2' in form.errors:
+                for error in form.errors['password2']:
+                    if 'match' in error.lower() or 'mismatch' in error.lower():
+                        messages.error(request, 'Passwords do not match')
+                        error_shown = True
+
+            # Show generic error if no specific error was shown
+            if not error_shown:
+                # Show any remaining form errors
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, f'{error}') 
     # ------------------------------------------------------- #
 
     return render(request, 'base/login_register.html', {'form':form})
