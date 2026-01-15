@@ -89,14 +89,10 @@
               <span>@{{room.host.username}}</span>
             </a>
           </div>
-          <!-- <div class="room__details">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi,
-            tenetur laudantium? Dicta repellendus rerum consectetur, voluptatem
-            repudiandae eum ea porro cupiditate provident nulla, deserunt, ab
-            ipsum corporis laboriosam deleniti molestias?
-          </div> -->
           <div style="display: flex; align-items: center; gap: 1rem;">
-            <span class="room__topics">{{room.topic}}</span>
+            <span class="room__topics" style="font-size: 1.4rem;"
+              >{{room.topic}}</span
+            >
             <form
               method="POST"
               action="{% url 'leave-room' room.id %}"
@@ -106,7 +102,7 @@
               <button
                 type="submit"
                 class="btn btn--main btn--pill"
-                style="padding: 0.5rem 1rem; font-size: 0.875rem; cursor: pointer;"
+                style="padding: 0.5rem 1.5rem; font-size: 1.4rem; cursor: pointer;"
               >
                 Leave Room
               </button>
