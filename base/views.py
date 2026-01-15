@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Room, Topic, Message, User
-from .forms import RoomForm, UserForm
+from .forms import RoomForm, UserForm, MyUserCreationForm
 from django.db.models import Q
 # imported from django documentation (after searching 'django flash messages')
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
+
 
 # login view function
 def loginPage(request):
@@ -18,20 +18,20 @@ def loginPage(request):
     if request.user.is_authenticated:
         return redirect('home')
 
-    # here we are getting username and password from login form (request.method == 'POST' means when user submits the form)
+    # here we are getting email and password from login form (request.method == 'POST' means when user submits the form)
     if request.method == 'POST':
-        username = request.POST.get('username').lower()
+        email = request.POST.get('email').lower()
         password = request.POST.get('password')
 
         # making sure the user exists
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
         except:
             # copied from documentation of django after searching 'django flash messgaes'
             messages.error(request, 'User does not exist')
 
         # here we are authenticating user. Meaning if user does exist then we are checking his credentials
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
 
         # Then here we are logging in user. 'if user is not None' means if 'user' exists
         if user is not None:
@@ -60,13 +60,13 @@ def registerPage(request):
     
     # --- Processing registration form data ---
     # Initializes a blank user registration form.
-    form = UserCreationForm()
+    form = MyUserCreationForm()
 
     # Checks if the user has submitted the registration form.
     if request.method == 'POST':
 
         # Creates a new form using the user submitted data (request.POST) and that is stored in 'form'
-        form = UserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST)
 
         # Checks if the submitted form data is valid
         if form.is_valid():
@@ -334,7 +334,7 @@ def updateUser(request):
     form = UserForm(instance=user)
 
     if request.method == 'POST':
-        form = UserForm(request.POST, instance=user)
+        form = UserForm(request.POST,request.FILES, instance=user)
         if form.is_valid():
             form.save()
             return redirect('user-profile', pk=user.id)
