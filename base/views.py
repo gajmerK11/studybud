@@ -1,8 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Room, Topic, Message
+from .models import Room, Topic, Message, User
 from .forms import RoomForm, UserForm
 from django.db.models import Q
-from django.contrib.auth.models import User
 # imported from django documentation (after searching 'django flash messages')
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
