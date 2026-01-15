@@ -67,3 +67,35 @@ if (photoInput)
 // Scroll to Bottom
 const conversationThread = document.querySelector(".room__box");
 if (conversationThread) conversationThread.scrollTop = conversationThread.scrollHeight;
+
+// Auto-dismiss alert messages
+const alerts = document.querySelectorAll(".alert");
+if (alerts.length > 0) {
+  alerts.forEach((alert) => {
+    // Auto-dismiss after 5 seconds
+    const timeout = setTimeout(() => {
+      dismissAlert(alert);
+    }, 5000);
+
+    // Close button functionality
+    const closeButton = alert.querySelector(".alert__close");
+    if (closeButton) {
+      closeButton.addEventListener("click", () => {
+        clearTimeout(timeout);
+        dismissAlert(alert);
+      });
+    }
+  });
+}
+
+function dismissAlert(alert) {
+  alert.classList.add("fade-out");
+  setTimeout(() => {
+    alert.remove();
+    // Remove container if no alerts left
+    const container = document.querySelector(".messages-container");
+    if (container && container.children.length === 0) {
+      container.remove();
+    }
+  }, 300);
+}

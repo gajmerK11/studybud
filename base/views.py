@@ -178,6 +178,17 @@ def room(request, pk):
     # below code is model manager. get() method returns one single item. Since get returns one single item, we need to get this by a unique value because let's say we have two items with the same value like a 'name' or sth like that it's gonna throw an error because it needs to get back single object. That's why in this case we are gonna specify the value that we wanna get it by as 'id=pk'
     room = Room.objects.get(id=pk)
 
+    # Restrict room access to only joined users and room host
+    if request.user.is_authenticated:
+        # Allow access if user is the host or a participant
+        if request.user != room.host and request.user not in room.participants.all():
+            messages.error(request, 'You need to join this room to access it.')
+            return redirect('home')
+    else:
+        # Redirect to login if user is not authenticated
+        messages.error(request, 'You need to be logged in to access rooms.')
+        return redirect('login')
+
     # This line of code is saying give us all set of messages related to this specific room. 
     # In django, we can query the child of a parent model (here Message is the child of parent model Room) like this i.e. by using small letter of model name not Message but message
     # '.order_by('-created')' displays recent messages at top
@@ -190,6 +201,10 @@ def room(request, pk):
     # Logic to create message i.e. comment
     # When user submits the message via "Write your message here" form 
     if request.method == 'POST':
+        # Ensure user is still a participant or host before allowing comment (extra security check)
+        if request.user != room.host and request.user not in room.participants.all():
+            messages.error(request, 'You need to join this room to comment.')
+            return redirect('home')
 
         # Creates the message. Here we are using 'Message' model because that's the model we have created for messages.
         # The below code is saying create a message with the current user, current room and the types message body.
@@ -205,8 +220,8 @@ def room(request, pk):
             body = request.POST.get('body')
         )
 
-        # It adds new user as Participants if he writes a message / comment 
-        room.participants.add(request.user)
+        # Note: Participants are no longer added automatically when commenting.
+        # Users must explicitly join the room using the Join Room button.
 
         # After the message is created, this line redirects the user back to the same room page that's why "pk=room.id" is used to know the exact location of current room. 
         return redirect('room', pk=room.id)
@@ -351,3 +366,38 @@ def topicsPage(request):
 def activityPage(request):
     room_messages = Message.objects.all()
     return render(request, 'base/activity.html', {'room_messages': room_messages})
+
+# view function for joining a room
+@login_required(login_url='login')
+def joinRoom(request, pk):
+    room = get_object_or_404(Room, id=pk)
+    
+    # Add the user to the room's participants if they're not already a participant
+    if request.user not in room.participants.all():
+        room.participants.add(request.user)
+        messages.success(request, f'You joined "{room.name}"')
+    else:
+        messages.info(request, 'You are already a member of this room')
+    
+    # Redirect to the room page after joining
+    return redirect('room', pk=room.id)
+
+# view function for leaving a room
+@login_required(login_url='login')
+def leaveRoom(request, pk):
+    room = get_object_or_404(Room, id=pk)
+    
+    # Prevent host from leaving their own room
+    if request.user == room.host:
+        messages.error(request, 'You cannot leave a room you created. Delete the room instead.')
+        return redirect('room', pk=room.id)
+    
+    # Remove the user from the room's participants if they are a participant
+    if request.user in room.participants.all():
+        room.participants.remove(request.user)
+        messages.success(request, f'You left "{room.name}"')
+    else:
+        messages.info(request, 'You are not a member of this room')
+    
+    # Redirect to home page after leaving
+    return redirect('home')

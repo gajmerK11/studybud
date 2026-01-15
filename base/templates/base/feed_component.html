@@ -45,7 +45,28 @@
       </svg>
       {{room.participants.all.count}} Joined
     </a>
+    {% if request.user.is_authenticated %} {% if request.user == room.host %}
     <p class="roomListRoom__topic">{{room.topic.name}}</p>
+    {% elif request.user in room.participants.all %}
+    <p class="roomListRoom__topic">Joined</p>
+    {% else %}
+    <form
+      method="POST"
+      action="{% url 'join-room' room.id %}"
+      style="display: inline; margin: 0;"
+    >
+      {% csrf_token %}
+      <button
+        type="submit"
+        class="roomListRoom__topic btn btn--main btn--pill"
+        style="padding: 0.5rem 1rem; font-size: 0.875rem; cursor: pointer; border: none;"
+      >
+        Join Room
+      </button>
+    </form>
+    {% endif %} {% else %}
+    <p class="roomListRoom__topic">{{room.topic.name}}</p>
+    {% endif %}
   </div>
 </div>
 {% endfor %}

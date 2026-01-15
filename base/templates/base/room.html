@@ -95,7 +95,23 @@
             repudiandae eum ea porro cupiditate provident nulla, deserunt, ab
             ipsum corporis laboriosam deleniti molestias?
           </div> -->
-          <span class="room__topics">{{room.topic}}</span>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span class="room__topics">{{room.topic}}</span>
+            <form
+              method="POST"
+              action="{% url 'leave-room' room.id %}"
+              style="display: inline; margin: 0;"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn--main btn--pill"
+                style="padding: 0.5rem 1rem; font-size: 0.875rem; cursor: pointer;"
+              >
+                Leave Room
+              </button>
+            </form>
+          </div>
         </div>
         <div class="room__conversation">
           <div class="threads scroll">
