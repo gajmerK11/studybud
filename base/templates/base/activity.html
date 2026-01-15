@@ -30,7 +30,9 @@
               href="{% url 'user-profile' message.user.id %}"
               class="roomListRoom__author"
             >
-              <div class="avatar avatar--small">
+              <div
+                class="avatar avatar--small{% if message.user == request.user %} active{% endif %}"
+              >
                 <img src="{{message.user.avatar.url}}" />
               </div>
               <p>
