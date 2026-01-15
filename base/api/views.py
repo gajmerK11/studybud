@@ -1,5 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from base.models import Room
+from .serializers import RoomSerializer
 
 
 # view function to handle incoming requests
@@ -16,3 +18,17 @@ def getRoutes(request):
     ] 
     # Return the routes as a JSON response using DRF's Response class
     return Response(routes)
+
+# view function to display all the rooms
+@api_view(['GET'])
+def getRooms(request):
+    rooms = Room.objects.all()
+    serializer = RoomSerializer(rooms, many=True)
+    return Response(serializer.data)
+
+# view function to display single room
+@api_view(['GET'])
+def getRoom(request, pk):
+    room = Room.objects.get(id=pk)
+    serializer = RoomSerializer(room, many=False)
+    return Response(serializer.data)
