@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Room, Topic, Message, User
 from .forms import RoomForm, UserForm, MyUserCreationForm
-from django.db.models import Q
+from django.db.models import Q, Count
 # imported from django documentation (after searching 'django flash messages')
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -160,10 +160,13 @@ def home(request):
     # This fetches all the messages/comments that satisfies the filtering condition
     room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
 
+    # Get top hosts based on number of rooms created (limit to top 5)
+    top_hosts = User.objects.annotate(room_count=Count('room')).filter(room_count__gt=0).order_by('-room_count')[:5]
+
     # when this function will be triggered, it will render 'home.html' file
     # render function takes 2 parameters: first one 'request' object, second one 'template' that we want to render
     # we have created this 'context' variable just to store the data that we want to pass
-    context = {'rooms': rooms, 'topics':topics, 'room_count':room_count, 'room_messages': room_messages}
+    context = {'rooms': rooms, 'topics':topics, 'room_count':room_count, 'room_messages': room_messages, 'top_hosts': top_hosts}
 
     return render(request, 'base/home.html', context)
 

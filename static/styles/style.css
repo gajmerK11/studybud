@@ -17,8 +17,8 @@
 /*========== base styles ==========*/
 
 * {
-  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-    "Helvetica Neue", sans-serif;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -729,6 +729,60 @@ a {
 /*==============================
 =>  Activities
 ================================*/
+
+/* Top Hosts Section */
+.top-hosts {
+  background: var(--color-dark);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.top-hosts__header {
+  background-color: var(--color-dark-light);
+  padding: 1rem 1.5rem;
+}
+
+.top-hosts__header h2 {
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-light);
+  letter-spacing: 1px;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.top-hosts__list {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.top-hosts__item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  transition: transform 0.2s;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.top-hosts__item:hover {
+  transform: translateX(5px);
+  background: var(--color-dark-light);
+}
+
+.top-hosts__info {
+  flex: 1;
+}
+
+.top-hosts__name {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--color-light);
+  margin: 0;
+}
 
 .activities {
   background: var(--color-dark);
