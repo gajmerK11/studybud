@@ -66,7 +66,20 @@ class Message(models.Model):
     # 'updated' stores the timestamp of the last time the message was modified
     # 'created' stores the timestamp of when the message was first created (sent)
     updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True) 
+    created = models.DateTimeField(auto_now_add=True)
+
+class Channel(models.Model):
+    CHANNEL_TYPES = [
+        ('text', 'Text Channel'),
+        ('voice', 'Voice Channel'),
+    ]
+
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='channels')
+    name = models.CharField(max_length=200)
+    channel_type = models.CharField(max_length=10, choices=CHANNEL_TYPES, default='text')
+    description = models.TextField(null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 # This method defines how a message object is represented as a string
 # It returns the first 50 characters of the message body for a readable summary (Remember it's not in the front end, but rather behind the scenes, in a way we can say in Django admin panel)
